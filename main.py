@@ -46,7 +46,6 @@ POG = [
     '<:cpog:819988583393001533>', '<a:kannapog:825964713585147904>']
 
 EMOTES = {
-    'cspost': '<:cspost:818437819155611678>',
     'wob': '<a:wob:818437838588608573>',
     'conga': '<a:conga:818437963616092183>' * 5,
     'blobnuts': '<a:blobNUTS:800173958082592809>',
@@ -165,10 +164,10 @@ async def ping(ctx):
     await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
 
 
-@client.command(aliases=['wob', 'conga', 'blobnuts', 'pcwob', 'blobroll',
+@client.command(aliases=['conga', 'blobnuts', 'pcwob', 'blobroll',
                          'thisisfine', 'wobble', 'catdance', 'thonk', 'sadge',
                          'pensivecheese', 'menacing', 'kirbo', 'kirb', 'death', 'kirbgun'])
-async def cspost(ctx):
+async def wob(ctx):
     user = str(ctx.author)
     await ctx.message.delete()
     await ctx.send(f'**{user[:-5]}**')
@@ -180,7 +179,7 @@ async def help(ctx):
     embed = discord.Embed(color=discord.Colour.green())
     embed.set_author(name='Help')
     embed.add_field(name='Emotes',
-                    value='conga, cspost, wob, blobnuts, pcwob, '
+                    value='conga, wob, blobnuts, pcwob, '
                           'blobroll, thisisfine, wobble, catdance, thonk, '
                           'sadge, pensivecheese, menacing, kirbo, kirb, death, kirbgun',
                     inline=False)
