@@ -188,9 +188,8 @@ async def help(ctx):
     embed.add_field(name='Misc (no prefix)',
                     value='dad joke (occasionally react to "i am"), pog, pain',
                     inline=False)
-    embed.add_field(name='<a:conga:818437963616092183> '
-                         '<:toes:818437838411399174>',
-                    value="Occasionally reacts with these emotes based on "
+    embed.add_field(name='<a:conga:818437963616092183>',
+                    value="Occasionally reacts with this emote based on "
                           "specific keywords",
                     inline=False)
     embed.add_field(name='Ping', value='Pong', inline=False)
