@@ -31,6 +31,8 @@ RANDOM_STUFF = [
     "betrayals happen when people sleep",
     "the balloon can fly. but the time "
     "the balloon flies does not matter",
+    "you come to me with a kangaroo in my "
+    "face and then fuck the kangaroo. fuck you.",
     "you cannot sleep in a world without pillows",
     "Die hamster sien dalk net deur die lens van sy eie oë.",
     "I never leave the bed when the sun is looking into my soul"
@@ -39,14 +41,16 @@ RANDOM_STUFF = [
 HAPPY = ['happy', 'celebrate', 'congrats', 'congratulations', 'nice']
 
 POG = [
-    '<:spedpog:816749395264405568>', '<:npog:816749361614159914>',
     '<:quagpog:819646454649323591>', '<:pog:819262750802575371>',
     '<:ppog:819262750751457341>', '<:pogu:819262751020023828>',
     '<:fishpog:819262750952783912>', '<a:pog:818437856779436102>',
-    '<:cpog:819988583393001533>', '<a:kannapog:825964713585147904>']
+    '<a:kannapog:825964713585147904>']
 
 EMOTES = {
-    'wob': '<a:wob:818437838588608573>',
+    'cspost': '<:cspost:818437819155611678>',
+    'wob': '<a:wob:818437838588608573>', 
+    'wob2': '<a:wob2:835252304159834122>', 
+    'wobs': '<a:wob2:835252304159834122> <a:wob:818437838588608573>',
     'conga': '<a:conga:818437963616092183>' * 5,
     'blobnuts': '<a:blobNUTS:800173958082592809>',
     'pcwob': '<a:ablobwobwork:800508733591388230>',
@@ -59,7 +63,9 @@ EMOTES = {
     'pensivecheese': '<:pensivecheese:823324747516608522>',
     'menacing': '<a:menacing:823417218431844372>' * 5,
     'kirbo': '<a:kirbo:832056783065186315>', 'kirb': '<:kirb:833042433385168947>',
-    'death': '<:death:833042433809580062>', 'kirbgun': '<:kirbgun:833043498537320508>'
+    'death': '<:death:833042433809580062>', 'kirbgun': '<:kirbgun:833043498537320508>',
+    'happy': '<:happy:834623832311857163>', 'leak': '<:leak:834623832651202570>', 
+    'confoos': '<:confoos:834624292703961088>', 'uhh': '<:uhh:834623832643469334>', 'oof': '<:oof:834623832466784287>'
 }
 
 
@@ -70,6 +76,9 @@ async def on_ready():
     await client.change_presence(activity=discord.Game(' reality surf '
                                                        '| +help'))
 
+@client.event
+async def on_member_remove(member):
+  print(f'EPIC GOODBYE {member}!')  # find out how to send message when someone leaves
 
 @tasks.loop(seconds=1)
 async def reminder():
@@ -124,8 +133,8 @@ async def remindme(ctx):
         await ctx.send(f'You will be reminded in {str(dates[0])} hours and '
                        f'{str(dates[1])} minutes: {remind_msg}')
         date = datetime.now() + timedelta(hours=dates[0]) + \
-               timedelta(minutes=dates[1]) + \
-               timedelta(seconds=dates[2] if len(dates) >= 3 else 0)
+            timedelta(minutes=dates[1]) + \
+            timedelta(seconds=dates[2] if len(dates) >= 3 else 0)
         with open('remindme.json', 'r+') as f:
             data = json.load(f)
             data.update({f'{date}': [remind_msg, ctx.author.id,
@@ -136,7 +145,6 @@ async def remindme(ctx):
         await ctx.send('`Command used incorrectly. Remember to format the '
                        'command as "+remindme HH:MM:SS <Reminder message>" '
                        '(seconds is optional)`')
-
 
 @client.command()
 async def reminddate(ctx):
@@ -164,10 +172,10 @@ async def ping(ctx):
     await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
 
 
-@client.command(aliases=['conga', 'blobnuts', 'pcwob', 'blobroll',
+@client.command(aliases=['wob', 'wob2', 'wobs', 'conga', 'blobnuts', 'pcwob', 'blobroll',
                          'thisisfine', 'wobble', 'catdance', 'thonk', 'sadge',
-                         'pensivecheese', 'menacing', 'kirbo', 'kirb', 'death', 'kirbgun'])
-async def wob(ctx):
+                         'pensivecheese', 'menacing', 'kirbo', 'kirb', 'death', 'kirbgun', 'happy', 'leak', 'confoos', 'uhh', 'oof'])
+async def cspost(ctx):
     user = str(ctx.author)
     await ctx.message.delete()
     await ctx.send(f'**{user[:-5]}**')
@@ -179,9 +187,9 @@ async def help(ctx):
     embed = discord.Embed(color=discord.Colour.green())
     embed.set_author(name='Help')
     embed.add_field(name='Emotes',
-                    value='conga, wob, blobnuts, pcwob, '
+                    value='conga, cspost, wob, wob2, wobs, blobnuts, pcwob, '
                           'blobroll, thisisfine, wobble, catdance, thonk, '
-                          'sadge, pensivecheese, menacing, kirbo, kirb, death, kirbgun',
+                          'sadge, pensivecheese, menacing, tummy, kirbo, kirb, death, kirbgun, happy, leak, confoos, uhh, oof',
                     inline=False)
     embed.add_field(name='AFK', value='Lets user go afk.', inline=False)
     embed.add_field(name='Av', value='Shows avatar of user.', inline=False)
@@ -192,12 +200,12 @@ async def help(ctx):
                     value="Occasionally reacts with this emote based on "
                           "specific keywords",
                     inline=False)
-    embed.add_field(name='Ping', value='Pong', inline=False)
+    embed.add_field(name='Ping', value='Pong!', inline=False)
     embed.add_field(name='Remindme', value='Reminder for something upcoming\n'
                                            'Format: HH:MM:SS <reminder message>'
                                            ' (seconds optional)', inline=False)
     embed.add_field(name='Reminddate', value='Reminder for an event\n'
-                                             'Format: YYYY-MM-DD'
+                                             'Format: YYYY-MM-DD '
                                              '<reminder message>', inline=False)
     embed.add_field(name='Future plans',
                     value="- add clear/remove feature for remindme\n"
