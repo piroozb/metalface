@@ -246,7 +246,7 @@ async def on_message(message):
             user = str(key)
             await send(f"{user[:-5]} is afk: {str(AFK[key])}")
 
-    elif msg.startswith('pog'):
+    if msg.startswith('pog'):
         async with message.channel.typing():
             # do expensive stuff here
             await asyncio.sleep(2)
