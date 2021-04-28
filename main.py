@@ -48,8 +48,8 @@ POG = [
 
 EMOTES = {
     'cspost': '<:cspost:818437819155611678>',
-    'wob': '<a:wob:818437838588608573>', 
-    'wob2': '<a:wob2:835252304159834122>', 
+    'wob': '<a:wob:818437838588608573>',
+    'wob2': '<a:wob2:835252304159834122>',
     'wobs': '<a:wob2:835252304159834122> <a:wob:818437838588608573>',
     'conga': '<a:conga:818437963616092183>' * 5,
     'blobnuts': '<a:blobNUTS:800173958082592809>',
@@ -62,10 +62,14 @@ EMOTES = {
     'sadge': '<:sadge:810649990808469514>',
     'pensivecheese': '<:pensivecheese:823324747516608522>',
     'menacing': '<a:menacing:823417218431844372>' * 5,
-    'kirbo': '<a:kirbo:832056783065186315>', 'kirb': '<:kirb:833042433385168947>',
-    'death': '<:death:833042433809580062>', 'kirbgun': '<:kirbgun:833043498537320508>',
-    'happy': '<:happy:834623832311857163>', 'leak': '<:leak:834623832651202570>', 
-    'confoos': '<:confoos:834624292703961088>', 'uhh': '<:uhh:834623832643469334>', 'oof': '<:oof:834623832466784287>'
+    'kirbo': '<a:kirbo:832056783065186315>',
+    'kirb': '<:kirb:833042433385168947>',
+    'death': '<:death:833042433809580062>',
+    'kirbgun': '<:kirbgun:833043498537320508>',
+    'happy': '<:happy:834623832311857163>',
+    'leak': '<:leak:834623832651202570>',
+    'confoos': '<:confoos:834624292703961088>',
+    'uhh': '<:uhh:834623832643469334>', 'oof': '<:oof:834623832466784287>'
 }
 
 
@@ -76,9 +80,6 @@ async def on_ready():
     await client.change_presence(activity=discord.Game(' reality surf '
                                                        '| +help'))
 
-@client.event
-async def on_member_remove(member):
-  print(f'EPIC GOODBYE {member}!')  # find out how to send message when someone leaves
 
 @tasks.loop(seconds=1)
 async def reminder():
@@ -146,6 +147,7 @@ async def remindme(ctx):
                        'command as "+remindme HH:MM:SS <Reminder message>" '
                        '(seconds is optional)`')
 
+
 @client.command()
 async def reminddate(ctx):
     try:
@@ -172,9 +174,11 @@ async def ping(ctx):
     await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
 
 
-@client.command(aliases=['wob', 'wob2', 'wobs', 'conga', 'blobnuts', 'pcwob', 'blobroll',
-                         'thisisfine', 'wobble', 'catdance', 'thonk', 'sadge',
-                         'pensivecheese', 'menacing', 'kirbo', 'kirb', 'death', 'kirbgun', 'happy', 'leak', 'confoos', 'uhh', 'oof'])
+@client.command(aliases=['wob', 'wob2', 'wobs', 'conga', 'blobnuts', 'pcwob',
+                         'blobroll', 'thisisfine', 'wobble', 'catdance',
+                         'thonk', 'sadge', 'pensivecheese', 'menacing', 'kirbo',
+                         'kirb', 'death', 'kirbgun', 'happy', 'leak', 'confoos',
+                         'uhh', 'oof'])
 async def cspost(ctx):
     user = str(ctx.author)
     await ctx.message.delete()
@@ -189,7 +193,8 @@ async def help(ctx):
     embed.add_field(name='Emotes',
                     value='conga, cspost, wob, wob2, wobs, blobnuts, pcwob, '
                           'blobroll, thisisfine, wobble, catdance, thonk, '
-                          'sadge, pensivecheese, menacing, tummy, kirbo, kirb, death, kirbgun, happy, leak, confoos, uhh, oof',
+                          'sadge, pensivecheese, menacing, tummy, kirbo, kirb, '
+                          'death, kirbgun, happy, leak, confoos, uhh, oof',
                     inline=False)
     embed.add_field(name='AFK', value='Lets user go afk.', inline=False)
     embed.add_field(name='Av', value='Shows avatar of user.', inline=False)
