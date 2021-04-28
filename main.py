@@ -47,19 +47,18 @@ POG = [
     '<a:kannapog:825964713585147904>']
 
 EMOTES = {
-    'cspost': '<:cspost:818437819155611678>',
     'wob': '<a:wob:818437838588608573>',
     'wob2': '<a:wob2:835252304159834122>',
     'wobs': '<a:wob2:835252304159834122> <a:wob:818437838588608573>',
     'conga': '<a:conga:818437963616092183>' * 5,
-    'blobnuts': '<a:blobNUTS:800173958082592809>',
-    'pcwob': '<a:ablobwobwork:800508733591388230>',
-    'blobroll': '<a:ablobwobroll:800508734014881812>',
-    'thisisfine': '<a:thisisfine:799085979553890334>',
+    'blobnuts': '<a:blobNUTS:837091554933211197>',
+    'pcwob': '<a:pcwob:837090418218631217>',
+    'blobroll': '<a:blobroll:837090486459301971>',
+    'thisisfine': '<a:thisisfine:837090507111792661>',
     'wobble': '<a:wobble:819661113515180102>',
     'catdance': '<a:catdance:821203420064382986>',
     'thonk': '<:thonk:822681360215965746>',
-    'sadge': '<:sadge:810649990808469514>',
+    'sadge': '<:sadge:822682645996503050>',
     'pensivecheese': '<:pensivecheese:823324747516608522>',
     'menacing': '<a:menacing:823417218431844372>' * 5,
     'kirbo': '<a:kirbo:832056783065186315>',
@@ -174,12 +173,12 @@ async def ping(ctx):
     await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
 
 
-@client.command(aliases=['wob', 'wob2', 'wobs', 'conga', 'blobnuts', 'pcwob',
+@client.command(aliases=['wob', 'wob2', 'wobs', 'blobnuts', 'pcwob',
                          'blobroll', 'thisisfine', 'wobble', 'catdance',
                          'thonk', 'sadge', 'pensivecheese', 'menacing', 'kirbo',
                          'kirb', 'death', 'kirbgun', 'happy', 'leak', 'confoos',
                          'uhh', 'oof'])
-async def cspost(ctx):
+async def conga(ctx):
     user = str(ctx.author)
     await ctx.message.delete()
     await ctx.send(f'**{user[:-5]}**')
@@ -191,9 +190,9 @@ async def help(ctx):
     embed = discord.Embed(color=discord.Colour.green())
     embed.set_author(name='Help')
     embed.add_field(name='Emotes',
-                    value='conga, cspost, wob, wob2, wobs, blobnuts, pcwob, '
+                    value='conga, wob, wob2, wobs, blobnuts, pcwob, '
                           'blobroll, thisisfine, wobble, catdance, thonk, '
-                          'sadge, pensivecheese, menacing, tummy, kirbo, kirb, '
+                          'sadge, pensivecheese, menacing, kirbo, kirb, '
                           'death, kirbgun, happy, leak, confoos, uhh, oof',
                     inline=False)
     embed.add_field(name='AFK', value='Lets user go afk.', inline=False)
