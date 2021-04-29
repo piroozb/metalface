@@ -22,7 +22,7 @@
 -   more planned for the future (connect 4, chess, schedule reminders)
 
 ## Try it yourself!
-To set up, download the files and then install the packages dotenv, discord.py, and flask. 
+To set up, download the files and then install the packages dotenv, discord.py, and flask.  
 Afterwards, create a file in the same directory named .env. Then put the following into the file:
 
 ```markdown
