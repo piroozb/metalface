@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="https://i.imgur.com/3ZSfNKZ.png" width="350" alt=".metalface logo">
+   <img src="https://i.imgur.com/pjqSS5A.png" width="350" alt=".metalface logo">
 </p>
 <h3 align="center">
    An open sourced variety discord bot.
