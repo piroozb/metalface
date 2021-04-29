@@ -1,8 +1,8 @@
 <p align="center">
-   <img src="https://i.imgur.com/OPm01wK.png" width="350" alt=".metalface logo">
+   <img src="https://i.imgur.com/3ZSfNKZ.png" width="350" alt=".metalface logo">
 </p>
 <h3 align="center">
-   An open sourced variety Discord bot.
+   An open sourced variety discord bot.
 </h3>
 <p align="center">
 <!--   <a href="https://ci.appveyor.com/project/fmbotdiscord/fmbot"><img src="https://ci.appveyor.com/api/projects/status/wy7md66rtm8ov1ej?svg=true" alt="Build status"></a> -->
