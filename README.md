@@ -15,11 +15,11 @@
 <!-- [Click here to add the bot to your server](http://invite.fmbot.xyz/). -->
 
 ## Features
-  - reminder feature
-  - animated emotes, no nitro needed
-  - Letting users go AFK
-  - Other minor features such as ping, avatar, pog
-  - more planned for the future (connect 4, chess, schedule reminders)
+-   reminder feature
+-   animated emotes, no nitro needed
+-   Letting users go AFK
+-   Other minor features such as ping, avatar, pog
+-   more planned for the future (connect 4, chess, schedule reminders)
 
 ## Try it yourself!
 To set up, download the files and then create a file in the same directory
