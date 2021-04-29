@@ -31,8 +31,6 @@ RANDOM_STUFF = [
     "betrayals happen when people sleep",
     "the balloon can fly. but the time "
     "the balloon flies does not matter",
-    "you come to me with a kangaroo in my "
-    "face and then fuck the kangaroo. fuck you.",
     "you cannot sleep in a world without pillows",
     "Die hamster sien dalk net deur die lens van sy eie oë.",
     "I never leave the bed when the sun is looking into my soul"
