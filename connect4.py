@@ -183,7 +183,7 @@ class Board:
 # Helper
 def evaluate_section(section: list, piece: str) -> int:
     """Evaluates the score of a specific section on the board based on
-    how close the section is to giving a connect 4"""
+    how close the section is to giving a connect 4."""
     score = 0
     opp_piece = PLAYER_PIECE
     if piece == PLAYER_PIECE:
