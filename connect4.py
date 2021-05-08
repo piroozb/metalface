@@ -12,8 +12,7 @@ AI_PIECE = 'Y'
 
 
 class Board:
-    """The board for the connect 4 game
-    """
+    """The board for the connect 4 game."""
     # === Private Attributes ===
     # _board:
     # The array representing the game board.
@@ -38,19 +37,18 @@ class Board:
         return msg
 
     def is_valid_location(self, r: int, c: int):
-        """Check if the section of the board is not already filled"""
+        """Check if the section of the board is not already filled."""
         if self._board[r][c] == EMPTY:
             return True
         return False
 
     def drop_piece(self, r: int, c: int, piece: str):
-        """Drop piece of one of the players into the board"""
+        """Drop piece of one of the players into the board."""
         self._board[r][c] = piece
 
     # for piece can use i from other function
     def is_win(self, piece: str) -> bool:
         """Checks if there are any connect fours"""
-
         for c in range(COL_COUNT):
             for r in range(ROW_COUNT):
 
@@ -83,9 +81,7 @@ class Board:
         return False
 
     def score_position(self, piece: str):
-        """
-        Return the Score of the position.
-        """
+        """Return the Score of the position."""
         score = 0
         # Score center column
         center_list = [self._board[r][COL_COUNT // 2] for r in range(ROW_COUNT)]
@@ -120,17 +116,14 @@ class Board:
         return score
 
     def is_terminal_node(self) -> bool:
-        """
-        Return if the game is finished or if there are no valid locations left.
-        """
+        """Return if the game is finished or if there are no valid
+        locations left."""
         return self.is_win(PLAYER_PIECE) or \
             self.is_win(AI_PIECE) or (len(self.get_valid_locations()) == 0)
 
     def get_valid_locations(self) -> Dict[int, int]:
-        """
-        Return a dict with key as column, and value as row, representing places
-        the piece can be dropped into.
-        """
+        """Return a dict with key as column, and value as row, representing
+         places the piece can be dropped into."""
         valid_locations = {}
         for c in range(COL_COUNT):
             for r in range(ROW_COUNT):
