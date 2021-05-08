@@ -154,9 +154,8 @@ async def connect4(ctx):
 
 @client.event
 async def on_reaction_add(reaction, user) -> None:
-    """
-    Check which reaction role was pressed and changes the board accordingly.
-    """
+    """Check which reaction role was pressed and changes the board
+    accordingly."""
     # If reaction is in a channel where no one is playing, or if the person
     # adding the reactions is the bot, do nothing.
     if reaction.message.id not in IDS or \
