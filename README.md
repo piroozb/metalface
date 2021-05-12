@@ -23,11 +23,11 @@
 -   more planned for the future (chess, schedule reminders)
 
 ## Technologies used
-- Python
-- Discord.py
-- Flask
-- Google Cloud (to run the bot)
-- Json
+- Python  
+- Discord.py  
+- Flask  
+- Google Cloud (to run the bot)  
+- Json  
 
 ## Try it yourself!
 To set up, download the files and then install the packages dotenv, discord.py, and flask.  
