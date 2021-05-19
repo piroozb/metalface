@@ -509,6 +509,9 @@ async def on_message(message):
 
     if any(word in split_msg for word in HAPPY):
         await message.add_reaction('<:dance:818498443973492756>')
+    
+    if 'bussin' in split_msg or msg.startswith('shee') or 'cheese' in split_msg:
+        await message.add_reaction('<:sheesh:844348540327297025>')
 
     if random.random() < 0.001:
         async with message.channel.typing():
