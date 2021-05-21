@@ -12,14 +12,22 @@
 </p>
 <hr />
 
-<!-- [Click here to add the bot to your server](http://invite.fmbot.xyz/). -->
+[Click here to add the bot to your server](https://discord.com/api/oauth2/authorize?client_id=834873988907139142&permissions=2148002880&scope=bot)
 
 ## Features
 -   reminder feature
 -   animated emotes, no nitro needed
+-   Connect 4 (against others or with our ai)
 -   Letting users go AFK
 -   Other minor features such as ping, avatar, pog
--   more planned for the future (connect 4, chess, schedule reminders)
+-   more planned for the future (chess, schedule reminders)
+
+## Technologies used
+- Python  
+- Discord.py  
+- Flask  
+- Google Cloud (to run the bot)  
+- Json  
 
 ## Try it yourself!
 To set up, download the files and then install the packages dotenv, discord.py, and flask.  
