@@ -417,7 +417,8 @@ async def help(ctx):
     embed.add_field(name='Misc (no prefix)',
                     value='dad joke (occasionally react to "i am"), pog, pain',
                     inline=False)
-    embed.add_field(name='<a:conga:818437963616092183>',
+    embed.add_field(name='<a:conga:818437963616092183> '
+                         '<:sheesh:844348540327297025>',
                     value="Occasionally reacts with this emote based on "
                           "specific keywords",
                     inline=False)
@@ -509,6 +510,10 @@ async def on_message(message):
 
     if any(word in split_msg for word in HAPPY):
         await message.add_reaction('<:dance:818498443973492756>')
+
+    if 'bussin' in split_msg or (msg.startswith('shee') and
+                                 msg.endswith('esh')) or 'cheese' in split_msg:
+        await message.add_reaction('<:sheesh:844348540327297025>')
 
     if random.random() < 0.001:
         async with message.channel.typing():
