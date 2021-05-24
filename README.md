@@ -18,7 +18,7 @@
 -   Connect 4 (against others or with our ai)
 -   Letting users go AFK
 -   Other minor features such as ping, avatar, pog
--   more planned for the future (chess, schedule reminders)
+-   more planned for the future (chess, schedule reminders, covid tracker, weather/time zones, google search, secret hitler)
 
 ## Technologies used
 - Python  
