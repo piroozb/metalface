@@ -11,9 +11,6 @@
 <!--   <a href="https://top.gg/bot/356268235697553409"><img src="https://top.gg/api/widget/status/356268235697553409.svg?noavatar=true" alt="Discord bot status"></a>
   <a href="https://top.gg/bot/356268235697553409"><img src="https://top.gg/api/widget/servers/356268235697553409.svg?noavatar=true" alt="Discord bot server amount"></a> -->
 </p>
-<hr />
-
-[Click here to add the bot to your server](https://discord.com/api/oauth2/authorize?client_id=834873988907139142&permissions=2148002880&scope=bot)
 
 ## Features
 -   reminder feature
