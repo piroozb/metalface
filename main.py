@@ -51,7 +51,6 @@ EMOTES = {
     'wob': '<a:wob:818437838588608573>',
     'wob2': '<a:wob2:835252304159834122>',
     'wobs': '<a:wob2:835252304159834122> <a:wob:818437838588608573>',
-    'blobnuts': '<a:blobNUTS:837091554933211197>',
     'pcwob': '<a:pcwob:837090418218631217>',
     'blobroll': '<a:blobroll:837090486459301971>',
     'thisisfine': '<a:thisisfine:837090507111792661>',
@@ -391,7 +390,7 @@ async def ping(ctx):
     await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
 
 
-@client.command(aliases=['wob2', 'wobs', 'blobnuts', 'pcwob', 'thisisfine',
+@client.command(aliases=['wob2', 'wobs', 'pcwob', 'thisisfine',
                          'wobble', 'catdance', 'thonk', 'sadge',
                          'pensivecheese', 'menacing', 'kirbo', 'kirb', 'death',
                          'kirbgun', 'happy', 'leak', 'confoos', 'uhh', 'oof',
@@ -408,7 +407,7 @@ async def help(ctx):
     embed = discord.Embed(color=discord.Colour.green())
     embed.set_author(name='Help')
     embed.add_field(name='Emotes',
-                    value='wob, wob2, wobs, blobnuts, pcwob, '
+                    value='wob, wob2, wobs, pcwob, '
                           'blobroll, thisisfine, wobble, catdance, thonk, '
                           'sadge, pensivecheese, menacing, kirbo, kirb, '
                           'death, kirbgun, happy, leak, confoos, uhh, oof,'
