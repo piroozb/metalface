@@ -51,7 +51,6 @@ EMOTES = {
     'wob': '<a:wob:818437838588608573>',
     'wob2': '<a:wob2:835252304159834122>',
     'wobs': '<a:wob2:835252304159834122> <a:wob:818437838588608573>',
-    'conga': '<a:conga:818437963616092183>' * 5,
     'blobnuts': '<a:blobNUTS:837091554933211197>',
     'pcwob': '<a:pcwob:837090418218631217>',
     'blobroll': '<a:blobroll:837090486459301971>',
@@ -69,7 +68,9 @@ EMOTES = {
     'happy': '<:happy:834623832311857163>',
     'leak': '<:leak:834623832651202570>',
     'confoos': '<:confoos:834624292703961088>',
-    'uhh': '<:uhh:834623832643469334>', 'oof': '<:oof:834623832466784287>'
+    'uhh': '<:uhh:834623832643469334>',
+    'oof': '<:oof:834623832466784287>',
+    'sheesh': '<:sheesh:844348540327297025>'
 }
 
 PLAYER_PIECE = 'R'
@@ -381,7 +382,7 @@ async def reminddate(ctx):
             json.dump(data, f)
     except (ValueError, IndexError):
         await ctx.send('`Command used incorrectly. Remember to format the '
-                       'command as "+remindme YYYY-MM-DD '
+                       'command as "+reminddate YYYY-MM-DD '
                        '<Reminder message>`')
 
 
@@ -390,12 +391,12 @@ async def ping(ctx):
     await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
 
 
-@client.command(aliases=['wob', 'wob2', 'wobs', 'blobnuts', 'pcwob',
-                         'blobroll', 'thisisfine', 'wobble', 'catdance',
-                         'thonk', 'sadge', 'pensivecheese', 'menacing', 'kirbo',
-                         'kirb', 'death', 'kirbgun', 'happy', 'leak', 'confoos',
-                         'uhh', 'oof'])
-async def conga(ctx):
+@client.command(aliases=['wob2', 'wobs', 'blobnuts', 'pcwob', 'thisisfine',
+                         'wobble', 'catdance', 'thonk', 'sadge',
+                         'pensivecheese', 'menacing', 'kirbo', 'kirb', 'death',
+                         'kirbgun', 'happy', 'leak', 'confoos', 'uhh', 'oof',
+                         'sheesh'])
+async def wob(ctx):
     user = str(ctx.author)
     await ctx.message.delete()
     await ctx.send(f'**{user[:-5]}**')
@@ -407,19 +408,20 @@ async def help(ctx):
     embed = discord.Embed(color=discord.Colour.green())
     embed.set_author(name='Help')
     embed.add_field(name='Emotes',
-                    value='conga, wob, wob2, wobs, blobnuts, pcwob, '
+                    value='wob, wob2, wobs, blobnuts, pcwob, '
                           'blobroll, thisisfine, wobble, catdance, thonk, '
                           'sadge, pensivecheese, menacing, kirbo, kirb, '
-                          'death, kirbgun, happy, leak, confoos, uhh, oof',
+                          'death, kirbgun, happy, leak, confoos, uhh, oof,'
+                          ' sheesh',
                     inline=False)
     embed.add_field(name='AFK', value='Lets user go afk.', inline=False)
     embed.add_field(name='Av', value='Shows avatar of user.', inline=False)
     embed.add_field(name='Misc (no prefix)',
                     value='dad joke (occasionally react to "i am"), pog, pain',
                     inline=False)
-    embed.add_field(name='<a:conga:818437963616092183> '
+    embed.add_field(name='<a:catdance:821203420064382986>, '
                          '<:sheesh:844348540327297025>',
-                    value="Occasionally reacts with this emote based on "
+                    value="Occasionally reacts with these emote based on "
                           "specific keywords",
                     inline=False)
     embed.add_field(name='Ping', value='Pong!', inline=False)
@@ -502,21 +504,12 @@ async def on_message(message):
             await asyncio.sleep(2)
         await send(f"Hi {new_msg}, I'm dad!")
 
-    elif msg == 'sus':
-        async with message.channel.typing():
-            # do expensive stuff here
-            await asyncio.sleep(2)
-        await send('https://tenor.com/view/hop-on-amoung-us-gif-18612031')
-
     if any(word in split_msg for word in HAPPY):
-        await message.add_reaction('<:dance:818498443973492756>')
-    
-    if 'bussin' in split_msg or msg.startswith('shee') or 'cheese' in split_msg:
-        await message.add_reaction('<:sheesh:844348540327297025>')
+        await message.add_reaction(EMOTES['catdance'])
 
     if 'bussin' in split_msg or (msg.startswith('shee') and
                                  msg.endswith('esh')) or 'cheese' in split_msg:
-        await message.add_reaction('<:sheesh:844348540327297025>')
+        await message.add_reaction(EMOTES['sheesh'])
 
     if random.random() < 0.001:
         async with message.channel.typing():
