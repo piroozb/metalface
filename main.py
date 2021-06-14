@@ -6,10 +6,10 @@ from keep_alive import keep_alive
 import asyncio
 import json
 import random
-import time
 from datetime import datetime, timedelta
 from connect4 import Board
 import math
+from discord_components import DiscordComponents, Button
 
 load_dotenv('.env')
 
@@ -129,30 +129,62 @@ async def connect4(ctx):
     """Starts a game with either a mentioned user or the bot and then
     adds it to IDS with message id as key, and a list with the board,
     player ids, and first move as the values"""
-    # Doesn't start if no one or a bot is mentioned
+    # Starts against bot if no one or bot is mentioned
+    player1 = ctx.author
+    board = Board()
     if len(ctx.message.mentions) == 0 or ctx.message.mentions[0] == client.user:
         player2 = client.user
+        message = await ctx.send(f':red_circle: '
+                                 f'{player1.display_name} :crossed_swords: '
+                                 f'{player2.display_name} :yellow_circle: \n'
+                                 + TOP_NUM + board.print_board() +
+                                 f'\n Current player: <@{player1.id}>'
+                                 f'\n :flag_white:: Forfeit', components=[])
+        # Adds the emotes the players will be clicking on and adds
+        # the game to the global dictionary
+        for emoji in CONNECT4:
+            await message.add_reaction(emoji)
+    # Doesn't start if other bot or user itself is mentioned
     elif ctx.message.mentions[0].bot or \
             ctx.message.mentions[0] == ctx.author:
         await ctx.send(':x: ERROR: You cannot tag a bot or yourself. '
                        '\nEither tag another user you want to play with'
                        ' or the bot/no one if you want to play with the bot.')
         return None
+    # At this point someone must've been mentioned, so starts game against them
     else:
         player2 = ctx.message.mentions[0]
-    player1 = ctx.author
-    board = Board()
-    # Prints starting board
-    message = await ctx.send(f':red_circle: '
-                             f'{player1.display_name} :crossed_swords: '
-                             f'{player2.display_name} :yellow_circle: \n'
-                             + TOP_NUM + board.print_board() +
-                             f'\n Current player: <@{player1.id}>'
-                             f'\n :flag_white:: Forfeit')
-    # Adds the emotes the players will be clicking on and adds
-    # the game to the global dictionary
-    for emoji in CONNECT4:
-        await message.add_reaction(emoji)
+        # Asks second user if they want to accept the invite.
+        message = await ctx.send(f"<@{player2.id}> Accept invite?", components=[
+            [Button(label="Accept", style=1), Button(label="Decline")]])
+        try:
+            interaction = await client.wait_for(
+                "button_click", timeout=10, check=lambda i: i.author == player2)
+            if interaction.component.label == "Accept":
+                await interaction.respond(content="Accepted!")
+                # Prints starting board
+                await message.edit(f':red_circle: '
+                                   f'{player1.display_name} :crossed_swords: '
+                                   f'{player2.display_name} :yellow_circle: \n'
+                                   + TOP_NUM + board.print_board() +
+                                   f'\n Current player: <@{player1.id}>'
+                                   f'\n :flag_white:: Forfeit', components=[])
+                # Adds the emotes the players will be clicking on and adds
+                # the game to the global dictionary
+                for emoji in CONNECT4:
+                    await message.add_reaction(emoji)
+            elif interaction.component.label == "Decline":
+                await interaction.respond(content="Declined!")
+                await message.edit(f"Game cancelled: "
+                                   f"invite was declined by <@{player2.id}>.",
+                                   components=[])
+                return None
+        except Exception as e:  # TimeoutError doesn't work for some reason
+            await message.edit(
+                "Game cancelled: invite timed out.", components=[])
+            await asyncio.sleep(5)
+            await message.delete()
+            return e
     IDS[message.id] = [board, player1, player2, 'R', 0, ctx.channel]
 
 
@@ -479,7 +511,7 @@ async def on_message(message):
     if message.author in AFK:
         del AFK[message.author]
         bot_msg = await send(f"<@!{message.author.id}> is no longer afk.")
-        time.sleep(5)
+        await asyncio.sleep(5)
         await bot_msg.delete()
     for key in AFK:
         if f'<@!{key.id}>' in message.content:
