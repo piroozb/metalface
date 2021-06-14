@@ -160,7 +160,7 @@ async def connect4(ctx):
             [Button(label="Accept", style=1), Button(label="Decline")]])
         try:
             interaction = await client.wait_for(
-                "button_click", timeout=10, check=lambda i: i.author == player2)
+                "button_click", timeout=60, check=lambda i: i.author == player2)
             if interaction.component.label == "Accept":
                 await interaction.respond(content="Accepted!")
                 # Prints starting board
