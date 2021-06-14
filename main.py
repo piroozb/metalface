@@ -36,7 +36,11 @@ RANDOM_STUFF = [
     "the balloon flies does not matter",
     "you cannot sleep in a world without pillows",
     "Die hamster sien dalk net deur die lens van sy eie oë.",
-    "I never leave the bed when the sun is looking into my soul"
+    "I never leave the bed when the sun is looking into my soul",
+    "Words are like clay. It is not the person who speaks "
+    "the words that shapes the clay. The one who is listening does.",
+    "It is not the size of the bag, it is the size of who holds it.",
+    "even if you are unmuted it is you who must decide to open your mouth"
 ]
 
 HAPPY = ['happy', 'celebrate', 'congrats', 'congratulations', 'nice']
