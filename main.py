@@ -104,6 +104,7 @@ async def on_ready():
     print(f'{client.user} has connected to Discord!')
     reminder.start()
     afk_connect4.start()
+    DiscordComponents(client)
     await client.change_presence(activity=discord.Game(' reality surf '
                                                        '| +help'))
 
