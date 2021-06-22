@@ -6,10 +6,10 @@
 </h3>
 <p align="center">
 <!--   <a href="https://ci.appveyor.com/project/fmbotdiscord/fmbot"><img src="https://ci.appveyor.com/api/projects/status/wy7md66rtm8ov1ej?svg=true" alt="Build status"></a> -->
-  <a href="https://discord.com/api/oauth2/authorize?client_id=834873988907139142&permissions=2148002880&scope=bot"><img align='middle' src="https://i.imgur.com/YVrXxR6.png" height='22' alt="Invite this bot"/></a>
+  <a href="https://discord.com/api/oauth2/authorize?client_id=834873988907139142&permissions=2214068032&scope=bot"><img align='middle' src="https://i.imgur.com/YVrXxR6.png" height='22' alt="Invite this bot"/></a>
   <a href="https://app.codacy.com/gh/piroozb/metalface/dashboard?branch=main"><img align='middle' src="https://app.codacy.com/project/badge/Grade/8e480ce5875a4cbc8a126a8dd706c561" alt="Codacy code quality"/></a>
-<!--   <a href="https://top.gg/bot/356268235697553409"><img src="https://top.gg/api/widget/status/356268235697553409.svg?noavatar=true" alt="Discord bot status"></a>
-  <a href="https://top.gg/bot/356268235697553409"><img src="https://top.gg/api/widget/servers/356268235697553409.svg?noavatar=true" alt="Discord bot server amount"></a> -->
+<a href="https://top.gg/bot/834873988907139142"><img align='middle' src="https://top.gg/api/widget/status/834873988907139142.svg?noavatar=true" alt="Discord bot status"></a>
+<!--  <a href="https://top.gg/bot/356268235697553409"><img src="https://top.gg/api/widget/servers/356268235697553409.svg?noavatar=true" alt="Discord bot server amount"></a> -->
 </p>
 
 ## Features
@@ -21,11 +21,11 @@
 -   more planned for the future (chess, schedule reminders, covid tracker, weather/time zones, google search, secret hitler)
 
 ## Technologies used
-- Python  
-- Discord.py  
-- Flask  
-- Google Cloud (to run the bot)  
-- Json  
+- Python
+- Discord.py
+- Flask
+- Google Cloud (to run the bot)
+- Json
 
 ## Try it yourself!
 To set up, download the files and then install the packages dotenv, discord.py, and flask.  
