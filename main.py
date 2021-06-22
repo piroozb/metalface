@@ -529,7 +529,7 @@ async def on_message(message):
         async with message.channel.typing():
             # do expensive stuff here
             await asyncio.sleep(2)
-        await send(client.get_emoji(798310247952547940))
+        await send('<:pain:798310247952547940>')
 
     elif (msg.startswith(('im ', 'i am ', "i'm "))) and \
             random.random() < 0.1 and guild.id != 754030333384589415:
