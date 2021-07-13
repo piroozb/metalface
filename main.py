@@ -1,20 +1,25 @@
 import discord
-from discord.ext import commands, tasks
 import os
 from dotenv import load_dotenv
 from keep_alive import keep_alive
+from discord_slash import SlashCommand
+from discord_slash.utils.manage_commands import create_option, create_choice
+from discord.ext import commands, tasks
 import asyncio
-import json
-import random
-from datetime import datetime, timedelta
 from connect4 import Board
+import random
+from datetime import datetime
 import math
-from discord_components import DiscordComponents, Button
+from discord_slash_components import DiscordComponents
+from discord_components import Button
+from dateutil.relativedelta import relativedelta
+import json
 
 load_dotenv('.env')
 
-client = commands.Bot(command_prefix='+', case_insensitive=True)
-client.remove_command('help')
+client = commands.Bot(command_prefix="+", intents=discord.Intents.all())
+# Declares slash commands through the client.
+slash = SlashCommand(client, sync_commands=True)
 BOT_ID = 834873988907139142
 AFK = {}
 
@@ -69,10 +74,7 @@ EMOTES = {
     'death': '<:death:833042433809580062>',
     'kirbgun': '<:kirbgun:833043498537320508>',
     'happy': '<:happy:834623832311857163>',
-    'leak': '<:leak:834623832651202570>',
-    'confoos': '<:confoos:834624292703961088>',
     'uhh': '<:uhh:834623832643469334>',
-    'oof': '<:oof:834623832466784287>',
     'sheesh': '<:sheesh:844348540327297025>'
 }
 
@@ -104,9 +106,9 @@ async def on_ready():
     print(f'{client.user} has connected to Discord!')
     reminder.start()
     afk_connect4.start()
-    DiscordComponents(client)
-    await client.change_presence(activity=discord.Game(' reality surf '
-                                                       '| +help'))
+    DiscordComponents(client, slash)
+    await client.change_presence(activity=discord.Game('Slash commands!'
+                                                       ' | /help'))
 
 
 @tasks.loop(seconds=60)
@@ -125,36 +127,45 @@ async def afk_connect4():
         del IDS[key]
 
 
-@client.command()
-async def connect4(ctx):
+@slash.slash(name="connect4",
+             description="Play against another user or our bot.",
+             options=[create_option(
+                 name="user",
+                 description='If you want to play with another user',
+                 option_type=6, required=False)])
+async def _connect4(ctx, player2=None):
     """Starts a game with either a mentioned user or the bot and then
     adds it to IDS with message id as key, and a list with the board,
     player ids, and first move as the values"""
     # Starts against bot if no one or bot is mentioned
-    player1 = ctx.author
-    board = Board()
-    if len(ctx.message.mentions) == 0 or ctx.message.mentions[0] == client.user:
+    player1, board = ctx.author, Board()
+    if player2 is None or player2 == client.user:
         player2 = client.user
+        message = await ctx.send('Loading board...')
+        async with message.channel.typing():
+            # do expensive stuff here
+            await asyncio.sleep(1)
+        await message.delete()
         message = await ctx.send(f':red_circle: '
                                  f'{player1.display_name} :crossed_swords: '
                                  f'{player2.display_name} :yellow_circle: \n'
                                  + TOP_NUM + board.print_board() +
                                  f'\n Current player: <@{player1.id}>'
-                                 f'\n :flag_white:: Forfeit', components=[])
+                                 f'\n :flag_white:: Forfeit')
         # Adds the emotes the players will be clicking on and adds
         # the game to the global dictionary
         for emoji in CONNECT4:
             await message.add_reaction(emoji)
+        IDS[message.id] = [board, player1, player2, 'R', 0, ctx.channel]
     # Doesn't start if other bot or user itself is mentioned
-    elif ctx.message.mentions[0].bot or \
-            ctx.message.mentions[0] == ctx.author:
+    elif player2.bot or \
+            player2 == ctx.author:
         await ctx.send(':x: ERROR: You cannot tag a bot or yourself. '
                        '\nEither tag another user you want to play with'
                        ' or the bot/no one if you want to play with the bot.')
         return None
     # At this point someone must've been mentioned, so starts game against them
     else:
-        player2 = ctx.message.mentions[0]
         # Asks second user if they want to accept the invite.
         message = await ctx.send(f"<@{player2.id}> Accept invite?", components=[
             [Button(label="Accept", style=1), Button(label="Decline")]])
@@ -162,37 +173,41 @@ async def connect4(ctx):
             interaction = await client.wait_for(
                 "button_click", timeout=60, check=lambda i: i.author == player2)
             if interaction.component.label == "Accept":
-                await interaction.respond(content="Accepted!")
                 # Prints starting board
-                await message.edit(f':red_circle: '
-                                   f'{player1.display_name} :crossed_swords: '
-                                   f'{player2.display_name} :yellow_circle: \n'
-                                   + TOP_NUM + board.print_board() +
-                                   f'\n Current player: <@{player1.id}>'
-                                   f'\n :flag_white:: Forfeit', components=[])
+                message2 = await ctx.send(f':red_circle: '
+                                          f'{player1.display_name} '
+                                          f':crossed_swords: '
+                                          f'{player2.display_name} '
+                                          f':yellow_circle: \n'
+                                          + TOP_NUM + board.print_board() +
+                                          f'\n Current player: <@{player1.id}>'
+                                          f'\n :flag_white:: Forfeit')
+                await interaction.respond(content="Accepted!")
                 # Adds the emotes the players will be clicking on and adds
                 # the game to the global dictionary
                 for emoji in CONNECT4:
-                    await message.add_reaction(emoji)
+                    await message2.add_reaction(emoji)
+                IDS[message2.id] = [board, player1, player2,
+                                    'R', 0, ctx.channel]
             elif interaction.component.label == "Decline":
+                await ctx.send(f"Game cancelled: "
+                               f"invite was declined by <@{player2.id}>.")
                 await interaction.respond(content="Declined!")
-                await message.edit(f"Game cancelled: "
-                                   f"invite was declined by <@{player2.id}>.",
-                                   components=[])
-                return None
+            await asyncio.sleep(2)
+            await message.delete()
+            return None
         except Exception as e:  # TimeoutError doesn't work for some reason
-            await message.edit(
-                "Game cancelled: invite timed out.", components=[])
+            await ctx.send("Game cancelled: invite timed out.")
             await asyncio.sleep(5)
             await message.delete()
             return e
-    IDS[message.id] = [board, player1, player2, 'R', 0, ctx.channel]
 
 
 @client.event
 async def on_reaction_add(reaction, user) -> None:
-    """Check which reaction role was pressed and changes the board
-    accordingly."""
+    """
+    Check which reaction role was pressed and changes the board accordingly.
+    """
     # If reaction is in a channel where no one is playing, or if the person
     # adding the reactions is the bot, do nothing.
     if reaction.message.id not in IDS or \
@@ -203,14 +218,14 @@ async def on_reaction_add(reaction, user) -> None:
     curr_piece = curr_channel[CURR_P]
     curr_board = curr_channel[BRD]
     # for P_DICT
-    player_red = True if curr_piece == 'R' else False
+    player_red = curr_piece == 'R'
     curr_player = curr_channel[P_DICT[player_red][0]]
     other_player = curr_channel[P_DICT[not player_red][0]]
     await reaction.remove(user)
     # stops the function if a reaction was added or if the reaction
     # was sent by a non-player
-    if reaction.emoji not in CONNECT4.keys() \
-            or (user != curr_player and user != other_player):
+    if reaction.emoji not in CONNECT4.keys() or user not in [curr_player,
+                                                             other_player]:
         return None
     # At this point we know it's one of the two players who reacted to an emote.
     # Thus, we can directly cancel the game if one of the players forfeit.
@@ -295,7 +310,7 @@ async def on_reaction_add(reaction, user) -> None:
     # the algorithm has chosen.
     if other_player.bot:
         await asyncio.sleep(1)
-        # Goes 6 layers deep into the tree
+        # Goes 5 layers deep into the tree
         col, minimax_score = curr_board.minimax(5, -math.inf, math.inf, True)
         row = curr_board.get_valid_locations()[col]
         # drop the piece into the board
@@ -334,124 +349,160 @@ async def on_reaction_add(reaction, user) -> None:
         curr_channel[CURR_P] = curr_piece
 
 
-@tasks.loop(seconds=1)
+@tasks.loop(seconds=15)
 async def reminder():
-    try:
-        f = open('remindme.json')
-        reminder_dict = json.load(f)
-        date_file = open('reminddate.json')
-        reminddate_dict = json.load(date_file)
-        lst = []
-        lst1 = []
-        for key in reminder_dict:
-            date_of = datetime.strptime(key.strip(),
-                                        '%Y-%m-%d %H:%M:%S.%f')
-            if datetime.now() >= date_of:
-                channel = client.get_channel(reminder_dict[key][2])
-                await channel.send(
-                    f"<@{reminder_dict[key][1]}> {reminder_dict[key][0]}!")
-                lst.append(key)
+    f = open('remindme.json', 'r')
+    data = json.load(f)
+    i = len(data) - 1
+    if data:
+        while i >= 0 and datetime.strptime(
+                data[i]['time'], "%m/%d/%Y, %H:%M:%S") <= datetime.now():
+            val = data.pop()
+            embed = discord.Embed(color=discord.Colour.blue(),
+                                  title='Reminder',
+                                  description=val['message'])
+            embed.set_thumbnail(url='https://i.imgur.com/HFPdTGU.png')
+            await client.get_user(val['user']).send(embed=embed)
+            i -= 1
         f.close()
-        if lst:
-            for item in lst:
-                del reminder_dict[item]
-            with open("remindme.json", "w") as f:
-                json.dump(reminder_dict, f)
-        for key in reminddate_dict:
-            date_of = datetime.strptime(key.strip(),
-                                        "%Y-%m-%d")
-            if datetime.now() >= date_of:
-                channel = client.get_channel(reminddate_dict[key][2])
-                await channel.send(
-                    f"<@{reminddate_dict[key][1]}> {reminddate_dict[key][0]}!")
-                lst1.append(key)
-        f.close()
-        if lst1:
-            for item in lst1:
-                del reminddate_dict[item]
-            with open("reminddate.json", "w") as f:
-                json.dump(reminddate_dict, f)
-    except json.decoder.JSONDecodeError:
-        pass
+        with open("remindme.json", "w") as f:
+            json.dump(data, f)
 
 
-@client.command()
-async def remindme(ctx):
+@slash.slash(name="remindme", description="Set a reminder",
+             options=[create_option(
+                 name='message', description='Reminder message',
+                 option_type=3, required=True),
+                 create_option(
+                     name="time",
+                     description='Time at which to send the reminder.'
+                                 'Ex: "in 3 days" or "on July 29th at 3pm"',
+                     option_type=3, required=True)])
+async def _remindme(ctx, message: str, time: str):
+    dates = time.split()
+    types = {'year': 0, 'month': 0, 'day': 0, 'hour': 0, 'hr': 0, 'min': 0}
+    embed = discord.Embed(color=discord.Colour.red(),
+                          description='Sorry, I could not understand what '
+                                      'reminder you wanted to set. '
+                                      'Please try again.')
     try:
-        msg = ctx.message.content.split()  # HH:MM Reminder
-        dates = msg[1].split(':')
-        dates = [int(i) for i in dates]
-        remind_msg = msg[2]
-        for i in range(3, len(msg)):
-            remind_msg += ' ' + msg[i]
-        await ctx.send(f'You will be reminded in {str(dates[0])} hours and '
-                       f'{str(dates[1])} minutes: {remind_msg}')
-        date = datetime.now() + timedelta(hours=dates[0]) + \
-            timedelta(minutes=dates[1]) + \
-            timedelta(seconds=dates[2] if len(dates) >= 3 else 0)
+        if any(typ in time for typ in types):
+            for i in range(len(dates)):
+                for item in types:
+                    if item in dates[i]:
+                        types[item] += int(dates[i - 1])
+            date = datetime.now() + relativedelta(years=+types['year']) + \
+                   relativedelta(months=types['month']) + \
+                   relativedelta(days=+types['day']) + \
+                   relativedelta(hours=+types['hour'] + types['hr']) + \
+                   relativedelta(minutes=+types['min'])
+        else:
+            months = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5,
+                      'jun': 6, 'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10,
+                      'nov': 11, 'dec': 12}
+            date = datetime.now()
+            for i in range(len(dates)):
+                for month in months:
+                    if month in dates[i].lower():
+                        date = date.replace(month=months[month])
+                        if i < len(dates) - 1:
+                            if dates[i + 1].isdigit():
+                                date = date.replace(day=int(dates[i + 1]))
+                            elif dates[i + 1][:-2].isdigit():
+                                date = date.replace(day=int(dates[i + 1][:-2]))
+                if dates[i][-2:].lower() in ['pm', 'am']:
+                    num = dates[i][:-2]
+                    if num.isdigit():
+                        date = date.replace(hour=int(num)
+                        if dates[i][-2:].lower() == 'am'
+                        else int(num) + 12)
+                    elif num.replace(':', '').isnumeric():
+                        if ':' in dates[i]:
+                            val = num.split(':')
+                            date = date.replace(hour=int(val[0]))
+                            date = date.replace(minute=int(val[1]))
+                        else:
+                            await ctx.send(embed=embed)
+                            return None
+                elif dates[i].isdigit():
+                    if len(dates[i]) <= 2:
+                        pass
+                    elif len(dates[i]) == 4:
+                        date = date.replace(year=int(dates[i]))
+                        print(date)
+                    else:
+                        await ctx.send(embed=embed)
+                        return None
+
+        if date <= datetime.now():
+            await ctx.send(embed=embed)
+            return None
+        embed = discord.Embed(color=discord.Colour.green(),
+                              description=f'You will be reminded on '
+                                          f'{date:%b %d, %Y at %H:%M}: '
+                                          f'{message}')
+        await ctx.send(embed=embed)
         with open('remindme.json', 'r+') as f:
             data = json.load(f)
-            data.update({f'{date}': [remind_msg, ctx.author.id,
-                                     ctx.channel.id]})
+            data.append({'user': ctx.author.id, 'message': message,
+                         'time': date.strftime("%m/%d/%Y, %H:%M:%S")})
+            data = sorted(data, key=lambda k:
+            datetime.
+                          strptime(k['time'], "%m/%d/%Y, %H:%M:%S"))
+            data.reverse()
             f.seek(0)
             json.dump(data, f)
-    except (ValueError, IndexError):
-        await ctx.send('`Command used incorrectly. Remember to format the '
-                       'command as "+remindme HH:MM:SS <Reminder message>" '
-                       '(seconds is optional)`')
+    except (TypeError, ValueError, IndexError):
+        await ctx.send(embed=embed)
 
 
-@client.command()
-async def reminddate(ctx):
-    try:
-        msg = ctx.message.content.split()
-        remind_msg = msg[2]
-        for i in range(3, len(msg)):
-            remind_msg += ' ' + msg[i]
-        date = msg[1]
-        await ctx.send(f'You will be reminded on {date}: {remind_msg}')
-        with open('reminddate.json', 'r+') as f:
-            data = json.load(f)
-            data.update({f'{date}': [remind_msg, ctx.author.id,
-                                     ctx.channel.id]})
-            f.seek(0)
-            json.dump(data, f)
-    except (ValueError, IndexError):
-        await ctx.send('`Command used incorrectly. Remember to format the '
-                       'command as "+reminddate YYYY-MM-DD '
-                       '<Reminder message>`')
+@slash.slash(name="ping", description="Ping the bot.")
+async def _ping(ctx):  # Defines a new "context" (ctx) command called "ping."
+    await ctx.send(f"Pong! ({round(client.latency * 1000)}ms)")
 
 
-@client.command()
-async def ping(ctx):
-    await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
+@slash.slash(name="emote", description="Use an emote.",
+             options=[create_option(
+                 name="emote",
+                 description='The emote you want to output',
+                 option_type=3,
+                 required=True,
+                 choices=[
+                        create_choice(name='wob', value='wob'),
+                        create_choice(name='wob2', value='wob2'),
+                        create_choice(name='wobs', value='wobs'),
+                        create_choice(name='pcwob', value='pcwob'),
+                        create_choice(name='blobroll', value='blobroll'),
+                        create_choice(name='thisisfine', value='thisisfine'),
+                        create_choice(name='catdance', value='catdance'),
+                        create_choice(name='thonk', value='thonk'),
+                        create_choice(name='sadge', value='sadge'),
+                        create_choice(name='pensivecheese',
+                                      value='pensivecheese'),
+                        create_choice(name='menacing', value='menacing'),
+                        create_choice(name='kirbo', value='kirbo'),
+                        create_choice(name='kirb', value='kirb'),
+                        create_choice(name='death', value='death'),
+                        create_choice(name='kirbgun', value='kirbgun'),
+                        create_choice(name='happy', value='happy'),
+                        create_choice(name='oof', value='oof'),
+                        create_choice(name='sheesh', value='sheesh')
+                          ])])
+async def _emote(ctx, emote: str):
+    await ctx.send(EMOTES[emote])
 
 
-@client.command(aliases=['wob2', 'wobs', 'pcwob', 'thisisfine',
-                         'wobble', 'catdance', 'thonk', 'sadge',
-                         'pensivecheese', 'menacing', 'kirbo', 'kirb', 'death',
-                         'kirbgun', 'happy', 'leak', 'confoos', 'uhh', 'oof',
-                         'sheesh'])
-async def wob(ctx):
-    user = str(ctx.author)
-    await ctx.message.delete()
-    await ctx.send(f'**{user[:-5]}**')
-    await ctx.send(EMOTES[ctx.invoked_with])
-
-
-@client.command()
-async def help(ctx):
-    embed = discord.Embed(color=discord.Colour.green())
-    embed.set_author(name='Help')
+@slash.slash(name='help', description='Bot information.')
+async def _help(ctx):
+    embed = discord.Embed(title='Help', color=discord.Colour.green())
     embed.add_field(name='Emotes',
                     value='wob, wob2, wobs, pcwob, '
-                          'blobroll, thisisfine, wobble, catdance, thonk, '
+                          'blobroll, thisisfine, catdance, thonk, '
                           'sadge, pensivecheese, menacing, kirbo, kirb, '
-                          'death, kirbgun, happy, leak, confoos, uhh, oof,'
-                          ' sheesh',
+                          'death, kirbgun, happy, oof, sheesh',
                     inline=False)
     embed.add_field(name='AFK', value='Lets user go afk.', inline=False)
-    embed.add_field(name='Av', value='Shows avatar of user.', inline=False)
+    embed.add_field(name='Avatar', value='Shows avatar of user.', inline=False)
     embed.add_field(name='Misc (no prefix)',
                     value='dad joke (occasionally react to "i am"), pog, pain',
                     inline=False)
@@ -461,12 +512,8 @@ async def help(ctx):
                           "specific keywords",
                     inline=False)
     embed.add_field(name='Ping', value='Pong!', inline=False)
-    embed.add_field(name='Remindme', value='Reminder for something upcoming\n'
-                                           'Format: HH:MM:SS <reminder message>'
-                                           ' (seconds optional)', inline=False)
-    embed.add_field(name='Reminddate', value='Reminder for an event\n'
-                                             'Format: YYYY-MM-DD '
-                                             '<reminder message>', inline=False)
+    embed.add_field(name='Remindme', value='Reminder for something upcoming\n',
+                    inline=False)
     embed.add_field(name='Connect4 <:connect4:840473222846742549>',
                     value='Play connect 4 with others or with'
                           ' the bot! Mention the user you want'
@@ -476,27 +523,38 @@ async def help(ctx):
                     value="- add clear/remove feature for remindme\n"
                           "- add reminderlist feature\n"
                           "- add schedule for upcoming school tests/assignments"
-                          "- google results",
+                          "\n- google results",
                     inline=False)
     await ctx.send(embed=embed)
 
 
-@client.command()
-async def av(ctx):
-    acc = ctx.message.mentions[0].avatar_url if ctx.message.mentions \
-        else ctx.author.avatar_url
-    embed = discord.Embed(title=f"{ctx.author}",
-                          description='**Avatar**',
-                          color=0xecce8b)
-    embed.set_image(url=acc)
+@slash.slash(name='avatar', description="Display a users' avatar",
+             options=[create_option(
+                 name="user",
+                 description='Fetch avatar from',
+                 option_type=6, required=False)])
+async def _avatar(ctx, user=None):
+    if user is not None:
+        embed = discord.Embed(title=f"{user.display_name}",
+                              description='**Avatar**',
+                              color=0xecce8b)
+        embed.set_image(url=user.avatar_url)
+    else:
+        embed = discord.Embed(title=f"{ctx.author.display_name}",
+                              description='**Avatar**',
+                              color=0xecce8b)
+        embed.set_image(url=ctx.author.avatar_url)
     await ctx.send(embed=embed)
 
 
-@client.command()
-async def afk(ctx):
-    AFK[ctx.author] = 'AFK' if ctx.message.content[4:].strip() == '' \
-        else ctx.message.content[4:].strip()
-    await ctx.send(f"<@{ctx.author.id}> I set you as AFK: "
+@slash.slash(name='afk', description="Set an AFK status",
+             options=[create_option(
+                 name="message",
+                 description='Message when another user mentions',
+                 option_type=3, required=True)])
+async def _afk(ctx, message: str):
+    AFK[ctx.author] = message
+    await ctx.send(f"{ctx.author.display_name} I set you as AFK: "
                    f"{AFK[ctx.author]}")
 
 
@@ -540,13 +598,30 @@ async def on_message(message):
             await asyncio.sleep(2)
         await send(f"Hi {new_msg}, I'm dad!")
 
+    elif msg.startswith('+'):
+        async with message.channel.typing():
+            # do expensive stuff here
+            await asyncio.sleep(2)
+        embed = discord.Embed(description="We have migrated to slash commands. "
+                                          "Type /help to see what features are "
+                                          "available. If that doesn't work, you"
+                                          " may have to re-invite the bot "
+                                          "[here](https://discord.com/api/oauth2/authorize?client_id=834873988907139142&permissions=2148006976&scope=bot%20applications.commands)."
+                                          "If slash commands have just been"
+                                          "implemented, you may have to wait"
+                                          "a couple hours before it starts "
+                                          "working again",
+                              color=discord.Colour.dark_purple())
+        await send(embed=embed)
+
     if any(word in split_msg for word in HAPPY):
         await message.add_reaction(EMOTES['catdance'])
 
     if 'bussin' in split_msg or (msg.startswith('shee') and
                                  msg.endswith('esh')) or 'cheese' in split_msg:
         await message.add_reaction(EMOTES['sheesh'])
-
+    if 'fax' in msg:
+        await message.add_reaction('📠')
     if random.random() < 0.001:
         async with message.channel.typing():
             # do expensive stuff here
