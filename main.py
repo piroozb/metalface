@@ -392,10 +392,10 @@ async def _remindme(ctx, message: str, time: str):
                     if item in dates[i]:
                         types[item] += int(dates[i - 1])
             date = datetime.now() + relativedelta(years=+types['year']) + \
-                   relativedelta(months=types['month']) + \
-                   relativedelta(days=+types['day']) + \
-                   relativedelta(hours=+types['hour'] + types['hr']) + \
-                   relativedelta(minutes=+types['min'])
+                relativedelta(months=types['month']) + \
+                relativedelta(days=+types['day']) + \
+                relativedelta(hours=+types['hour'] + types['hr']) + \
+                relativedelta(minutes=+types['min'])
         else:
             months = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5,
                       'jun': 6, 'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10,
@@ -414,8 +414,8 @@ async def _remindme(ctx, message: str, time: str):
                     num = dates[i][:-2]
                     if num.isdigit():
                         date = date.replace(hour=int(num)
-                        if dates[i][-2:].lower() == 'am'
-                        else int(num) + 12)
+                                            if dates[i][-2:].lower() == 'am'
+                                            else int(num) + 12)
                     elif num.replace(':', '').isnumeric():
                         if ':' in dates[i]:
                             val = num.split(':')
@@ -447,8 +447,7 @@ async def _remindme(ctx, message: str, time: str):
             data.append({'user': ctx.author.id, 'message': message,
                          'time': date.strftime("%m/%d/%Y, %H:%M:%S")})
             data = sorted(data, key=lambda k:
-            datetime.
-                          strptime(k['time'], "%m/%d/%Y, %H:%M:%S"))
+                          datetime.strptime(k['time'], "%m/%d/%Y, %H:%M:%S"))
             data.reverse()
             f.seek(0)
             json.dump(data, f)
@@ -525,6 +524,11 @@ async def _help(ctx):
                           "- add schedule for upcoming school tests/assignments"
                           "\n- google results",
                     inline=False)
+    embed.add_field(name='Enjoy this bot?',
+                    value='If you like the bot and want to support it, you can'
+                         'upvote it at [Top.gg]'
+                         '(https://top.gg/bot/834873988907139142/vote)!'
+                          'Thanks in advance!', inline=False)
     await ctx.send(embed=embed)
 
 
