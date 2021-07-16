@@ -157,12 +157,14 @@ async def _connect4(ctx, player2=None):
         for emoji in CONNECT4:
             await message.add_reaction(emoji)
         IDS[message.id] = [board, player1, player2, 'R', 0, ctx.channel]
+        await check_afk(ctx)
     # Doesn't start if other bot or user itself is mentioned
     elif player2.bot or \
             player2 == ctx.author:
         await ctx.send(':x: ERROR: You cannot tag a bot or yourself. '
                        '\nEither tag another user you want to play with'
                        ' or the bot/no one if you want to play with the bot.')
+        await check_afk(ctx)
         return None
     # At this point someone must've been mentioned, so starts game against them
     else:
@@ -195,11 +197,13 @@ async def _connect4(ctx, player2=None):
                 await interaction.respond(content="Declined!")
             await asyncio.sleep(2)
             await message.delete()
+            await check_afk(ctx)
             return None
         except Exception as e:  # TimeoutError doesn't work for some reason
             await ctx.send("Game cancelled: invite timed out.")
             await asyncio.sleep(5)
             await message.delete()
+            await check_afk(ctx)
             return e
 
 
@@ -423,6 +427,7 @@ async def _remindme(ctx, message: str, time: str):
                             date = date.replace(minute=int(val[1]))
                         else:
                             await ctx.send(embed=embed)
+                            await check_afk(ctx)
                             return None
                 elif dates[i].isdigit():
                     if len(dates[i]) <= 2:
@@ -432,10 +437,12 @@ async def _remindme(ctx, message: str, time: str):
                         print(date)
                     else:
                         await ctx.send(embed=embed)
+                        await check_afk(ctx)
                         return None
 
         if date <= datetime.now():
             await ctx.send(embed=embed)
+            await check_afk(ctx)
             return None
         embed = discord.Embed(color=discord.Colour.green(),
                               description=f'You will be reminded on '
@@ -453,11 +460,13 @@ async def _remindme(ctx, message: str, time: str):
             json.dump(data, f)
     except (TypeError, ValueError, IndexError):
         await ctx.send(embed=embed)
+        await check_afk(ctx)
 
 
 @slash.slash(name="ping", description="Ping the bot.")
 async def _ping(ctx):  # Defines a new "context" (ctx) command called "ping."
     await ctx.send(f"Pong! ({round(client.latency * 1000)}ms)")
+    await check_afk(ctx)
 
 
 @slash.slash(name="emote", description="Use an emote.",
@@ -489,6 +498,7 @@ async def _ping(ctx):  # Defines a new "context" (ctx) command called "ping."
                           ])])
 async def _emote(ctx, emote: str):
     await ctx.send(EMOTES[emote])
+    await check_afk(ctx)
 
 
 @slash.slash(name='help', description='Bot information.')
@@ -525,11 +535,12 @@ async def _help(ctx):
                           "\n- google results",
                     inline=False)
     embed.add_field(name='Enjoy this bot?',
-                    value='If you like the bot and want to support it, you can'
+                    value='If you like the bot and want to support it, you can '
                          'upvote it at [Top.gg]'
-                         '(https://top.gg/bot/834873988907139142/vote)!'
+                         '(https://top.gg/bot/834873988907139142/vote)!\n'
                           'Thanks in advance!', inline=False)
     await ctx.send(embed=embed)
+    await check_afk(ctx)
 
 
 @slash.slash(name='avatar', description="Display a users' avatar",
@@ -549,6 +560,7 @@ async def _avatar(ctx, user=None):
                               color=0xecce8b)
         embed.set_image(url=ctx.author.avatar_url)
     await ctx.send(embed=embed)
+    await check_afk(ctx)
 
 
 @slash.slash(name='afk', description="Set an AFK status",
@@ -571,16 +583,7 @@ async def on_message(message):
     send = message.channel.send
     guild = message.guild
     msg.replace("'", "")
-    if message.author in AFK:
-        del AFK[message.author]
-        bot_msg = await send(f"<@!{message.author.id}> is no longer afk.")
-        await asyncio.sleep(5)
-        await bot_msg.delete()
-    for key in AFK:
-        if f'<@!{key.id}>' in message.content:
-            user = str(key)
-            await send(f"{user[:-5]} is afk: {str(AFK[key])}")
-
+    await check_afk(message)
     if msg.startswith('pog'):
         async with message.channel.typing():
             # do expensive stuff here
@@ -610,11 +613,7 @@ async def on_message(message):
                                           "Type /help to see what features are "
                                           "available. If that doesn't work, you"
                                           " may have to re-invite the bot "
-                                          "[here](https://discord.com/api/oauth2/authorize?client_id=834873988907139142&permissions=2148006976&scope=bot%20applications.commands)."
-                                          "If slash commands have just been"
-                                          "implemented, you may have to wait"
-                                          "a couple hours before it starts "
-                                          "working again",
+                                          "[here](https://discord.com/api/oauth2/authorize?client_id=834873988907139142&permissions=2148006976&scope=bot%20applications.commands).",
                               color=discord.Colour.dark_purple())
         await send(embed=embed)
 
@@ -633,6 +632,19 @@ async def on_message(message):
         await send(random.choice(RANDOM_STUFF))
     await client.process_commands(message)
 
+
+async def check_afk(message):
+    if message.author in AFK:
+        del AFK[message.author]
+        bot_msg = await message.channel.send(f"<@!{message.author.id}>"
+                                             f" is no longer afk.")
+        await asyncio.sleep(5)
+        await bot_msg.delete()
+        for key in AFK:
+            if f'<@!{key.id}>' in message.content:
+                user = str(key)
+                await message.channel.send(
+                    f"{user[:-5]} is afk: {str(AFK[key])}")
 
 keep_alive()
 client.run(os.getenv('TOKEN'))
