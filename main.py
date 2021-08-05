@@ -1,19 +1,20 @@
-import discord
-import os
-from dotenv import load_dotenv
-from keep_alive import keep_alive
-from discord_slash import SlashCommand
+import discord  # for embed messages
+import os  # for getting the token
+from dotenv import load_dotenv  # also for getting token
+from keep_alive import keep_alive  # to keep the bot running
+from discord_slash import SlashCommand  # for slash commands
+# for slash command options
 from discord_slash.utils.manage_commands import create_option, create_choice
-from discord.ext import commands, tasks
-import asyncio
-from connect4 import Board
-import random
-from datetime import datetime
-import math
-from discord_slash_components import DiscordComponents
-from discord_components import Button
-from dateutil.relativedelta import relativedelta
-import json
+from discord.ext import commands, tasks  # for background tasks
+import asyncio  # to let things run asynchronously
+from connect4 import Board  # for connect 4 command
+import random  # to randomize
+from datetime import datetime  # for remindme
+import math  # for mini-max algorithm connect 4 bot
+from discord_slash_components import DiscordComponents  # for discord buttons
+from discord_components import Button  # for discord buttons
+from dateutil.relativedelta import relativedelta  # for adding time to datetime
+import json  # for storing reminders
 
 load_dotenv('.env')
 
@@ -21,8 +22,9 @@ client = commands.Bot(command_prefix="+", intents=discord.Intents.all())
 # Declares slash commands through the client.
 slash = SlashCommand(client, sync_commands=True)
 BOT_ID = 834873988907139142
-AFK = {}
+AFK = {}  # for afk command
 
+# randomly sends these messages by chance
 RANDOM_STUFF = [
     "death is inevitable",
     "Sometimes I think of what exists outside of my "
@@ -48,14 +50,17 @@ RANDOM_STUFF = [
     "even if you are unmuted it is you who must decide to open your mouth"
 ]
 
+# happy reactions
 HAPPY = ['happy', 'celebrate', 'congrats', 'congratulations', 'nice']
 
+# reactions to 'POG'
 POG = [
     '<:quagpog:819646454649323591>', '<:pog:819262750802575371>',
     '<:ppog:819262750751457341>', '<:pogu:819262751020023828>',
     '<:fishpog:819262750952783912>', '<a:pog:818437856779436102>',
     '<a:kannapog:825964713585147904>']
 
+# for emote command
 EMOTES = {
     'wob': '<a:wob:818437838588608573>',
     'wob2': '<a:wob2:835252304159834122>',
@@ -103,6 +108,8 @@ while content != '':
 
 @client.event
 async def on_ready():
+    """Sends messages once bot connects and sets bot activity.
+    Also starts any background tasks"""
     print(f'{client.user} has connected to Discord!')
     reminder.start()
     afk_connect4.start()
@@ -113,6 +120,8 @@ async def on_ready():
 
 @tasks.loop(seconds=60)
 async def afk_connect4():
+    """If a connect 4 game has been ongoing for more than 4 hours,
+    cancels the game"""
     remove = []
     for key in IDS:
         if IDS[key][TIMER] == 240:
@@ -396,10 +405,10 @@ async def _remindme(ctx, message: str, time: str):
                     if item in dates[i]:
                         types[item] += int(dates[i - 1])
             date = datetime.now() + relativedelta(years=+types['year']) + \
-                relativedelta(months=types['month']) + \
-                relativedelta(days=+types['day']) + \
-                relativedelta(hours=+types['hour'] + types['hr']) + \
-                relativedelta(minutes=+types['min'])
+                   relativedelta(months=types['month']) + \
+                   relativedelta(days=+types['day']) + \
+                   relativedelta(hours=+types['hour'] + types['hr']) + \
+                   relativedelta(minutes=+types['min'])
         else:
             months = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5,
                       'jun': 6, 'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10,
@@ -414,12 +423,13 @@ async def _remindme(ctx, message: str, time: str):
                                 date = date.replace(day=int(dates[i + 1]))
                             elif dates[i + 1][:-2].isdigit():
                                 date = date.replace(day=int(dates[i + 1][:-2]))
+                        break
                 if dates[i][-2:].lower() in ['pm', 'am']:
                     num = dates[i][:-2]
                     if num.isdigit():
                         date = date.replace(hour=int(num)
-                                            if dates[i][-2:].lower() == 'am'
-                                            else int(num) + 12)
+                        if dates[i][-2:].lower() == 'am'
+                        else int(num) + 12)
                     elif num.replace(':', '').isnumeric():
                         if ':' in dates[i]:
                             val = num.split(':')
@@ -427,22 +437,16 @@ async def _remindme(ctx, message: str, time: str):
                             date = date.replace(minute=int(val[1]))
                         else:
                             await ctx.send(embed=embed)
-                            await check_afk(ctx)
                             return None
                 elif dates[i].isdigit():
                     if len(dates[i]) <= 2:
                         pass
                     elif len(dates[i]) == 4:
                         date = date.replace(year=int(dates[i]))
-                        print(date)
-                    else:
-                        await ctx.send(embed=embed)
-                        await check_afk(ctx)
-                        return None
-
+        if 'tomorrow' in dates:
+            date += relativedelta(days=+1)
         if date <= datetime.now():
             await ctx.send(embed=embed)
-            await check_afk(ctx)
             return None
         embed = discord.Embed(color=discord.Colour.green(),
                               description=f'You will be reminded on '
@@ -454,13 +458,13 @@ async def _remindme(ctx, message: str, time: str):
             data.append({'user': ctx.author.id, 'message': message,
                          'time': date.strftime("%m/%d/%Y, %H:%M:%S")})
             data = sorted(data, key=lambda k:
-                          datetime.strptime(k['time'], "%m/%d/%Y, %H:%M:%S"))
+            datetime.
+                          strptime(k['time'], "%m/%d/%Y, %H:%M:%S"))
             data.reverse()
             f.seek(0)
             json.dump(data, f)
     except (TypeError, ValueError, IndexError):
         await ctx.send(embed=embed)
-        await check_afk(ctx)
 
 
 @slash.slash(name="ping", description="Ping the bot.")
@@ -534,11 +538,14 @@ async def _help(ctx):
                           "- add schedule for upcoming school tests/assignments"
                           "\n- google results",
                     inline=False)
-    embed.add_field(name='Enjoy this bot?',
-                    value='If you like the bot and want to support it, you can '
-                         'upvote it at [Top.gg]'
-                         '(https://top.gg/bot/834873988907139142/vote)!\n'
-                          'Thanks in advance!', inline=False)
+    embed.add_field(name='Support',
+                    value='[Invite]'
+                          '(https://discord.com/oauth2/authorize?client_id=834873988907139142&permissions=2148006976&scope=bot%20applications.commands)'
+                          ' - [Vote me!]'
+                         '(https://top.gg/bot/834873988907139142/vote) -'
+                          ' [Report a bug or any feedback]'
+                          '(https://github.com/piroozb/metalface/issues)',
+                    inline=False)
     await ctx.send(embed=embed)
     await check_afk(ctx)
 
