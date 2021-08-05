@@ -22,7 +22,7 @@
 - Python
 - Discord.py
 - Flask
-- Google Cloud (to run the bot)
+- Heroku (to run the bot)
 - Json
 
 ## Try it yourself!
