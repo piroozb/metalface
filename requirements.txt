@@ -1,0 +1,14 @@
+asyncio==3.4.3
+discord==1.7.3
+discord-components==1.0.0
+discord-interactions==0.3.0
+discord-interactions.py==0.0.8
+discord-py-slash-command==1.2.2
+discord-slash-components==0.0.1
+discord.ext.context==0.1.7
+discord.py==1.7.3
+Flask==1.1.2
+python-dateutil==2.8.1
+python-dotenv==0.15.0
+typing-extensions==3.7.4.3
+
