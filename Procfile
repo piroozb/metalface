@@ -1,1 +1,1 @@
-Worker: node /src/main.py
+Worker: node ./main.py
