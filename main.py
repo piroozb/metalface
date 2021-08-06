@@ -536,7 +536,7 @@ async def _help(ctx):
                     value="- add clear/remove feature for remindme\n"
                           "- add reminderlist feature\n"
                           "- add schedule for upcoming school tests/assignments"
-                          "\n- google results",
+                          "\n- google results \n- faceapp",
                     inline=False)
     embed.add_field(name='Support',
                     value='[Invite]'
