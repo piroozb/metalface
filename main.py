@@ -428,8 +428,8 @@ async def _remindme(ctx, message: str, time: str):
                     num = dates[i][:-2]
                     if num.isdigit():
                         date = date.replace(hour=int(num)
-                                            if dates[i][-2:].lower() == 'am'
-                                            else int(num) + 12)
+                        if dates[i][-2:].lower() == 'am'
+                        else int(num) + 12)
                         date = date.replace(minute=0)
                     elif num.replace(':', '').isnumeric():
                         if ':' in dates[i]:
@@ -459,7 +459,8 @@ async def _remindme(ctx, message: str, time: str):
             data.append({'user': ctx.author.id, 'message': message,
                          'time': date.strftime("%m/%d/%Y, %H:%M:%S")})
             data = sorted(data, key=lambda k:
-                          datetime.strptime(k['time'], "%m/%d/%Y, %H:%M:%S"))
+            datetime.
+                          strptime(k['time'], "%m/%d/%Y, %H:%M:%S"))
             data.reverse()
             f.seek(0)
             json.dump(data, f)
@@ -480,26 +481,26 @@ async def _ping(ctx):  # Defines a new "context" (ctx) command called "ping."
                  option_type=3,
                  required=True,
                  choices=[
-                        create_choice(name='wob', value='wob'),
-                        create_choice(name='wob2', value='wob2'),
-                        create_choice(name='wobs', value='wobs'),
-                        create_choice(name='pcwob', value='pcwob'),
-                        create_choice(name='blobroll', value='blobroll'),
-                        create_choice(name='thisisfine', value='thisisfine'),
-                        create_choice(name='catdance', value='catdance'),
-                        create_choice(name='thonk', value='thonk'),
-                        create_choice(name='sadge', value='sadge'),
-                        create_choice(name='pensivecheese',
-                                      value='pensivecheese'),
-                        create_choice(name='menacing', value='menacing'),
-                        create_choice(name='kirbo', value='kirbo'),
-                        create_choice(name='kirb', value='kirb'),
-                        create_choice(name='death', value='death'),
-                        create_choice(name='kirbgun', value='kirbgun'),
-                        create_choice(name='happy', value='happy'),
-                        create_choice(name='oof', value='oof'),
-                        create_choice(name='sheesh', value='sheesh')
-                          ])])
+                     create_choice(name='wob', value='wob'),
+                     create_choice(name='wob2', value='wob2'),
+                     create_choice(name='wobs', value='wobs'),
+                     create_choice(name='pcwob', value='pcwob'),
+                     create_choice(name='blobroll', value='blobroll'),
+                     create_choice(name='thisisfine', value='thisisfine'),
+                     create_choice(name='catdance', value='catdance'),
+                     create_choice(name='thonk', value='thonk'),
+                     create_choice(name='sadge', value='sadge'),
+                     create_choice(name='pensivecheese',
+                                   value='pensivecheese'),
+                     create_choice(name='menacing', value='menacing'),
+                     create_choice(name='kirbo', value='kirbo'),
+                     create_choice(name='kirb', value='kirb'),
+                     create_choice(name='death', value='death'),
+                     create_choice(name='kirbgun', value='kirbgun'),
+                     create_choice(name='happy', value='happy'),
+                     create_choice(name='oof', value='oof'),
+                     create_choice(name='sheesh', value='sheesh')
+                 ])])
 async def _emote(ctx, emote: str):
     await ctx.send(EMOTES[emote])
     await check_afk(ctx)
@@ -542,7 +543,7 @@ async def _help(ctx):
                     value='[Invite]'
                           '(https://discord.com/oauth2/authorize?client_id=834873988907139142&permissions=2148006976&scope=bot%20applications.commands)'
                           ' - [Vote me!]'
-                         '(https://top.gg/bot/834873988907139142/vote) -'
+                          '(https://top.gg/bot/834873988907139142/vote) -'
                           ' [Report a bug or any feedback]'
                           '(https://github.com/piroozb/metalface/issues)',
                     inline=False)
@@ -652,6 +653,7 @@ async def check_afk(message):
                 user = str(key)
                 await message.channel.send(
                     f"{user[:-5]} is afk: {str(AFK[key])}")
+
 
 keep_alive()
 client.run(os.getenv('TOKEN'))
