@@ -38,9 +38,7 @@ class Board:
 
     def is_valid_location(self, r: int, c: int):
         """Check if the section of the board is not already filled."""
-        if self._board[r][c] == EMPTY:
-            return True
-        return False
+        return self._board[r][c] == EMPTY
 
     def drop_piece(self, r: int, c: int, piece: str):
         """Drop piece of one of the players into the board."""
@@ -53,31 +51,49 @@ class Board:
             for r in range(ROW_COUNT):
 
                 # Horizontal Wins
-                if c < COL_COUNT - 3:
-                    if (self._board[r][c] == self._board[r][c + 1] == self.
-                            _board[r][c + 2] == self._board[r][c + 3] == piece):
-                        return True
+                if c < COL_COUNT - 3 and (
+                    self._board[r][c]
+                    == self._board[r][c + 1]
+                    == self._board[r][c + 2]
+                    == self._board[r][c + 3]
+                    == piece
+                ):
+                    return True
 
                 # Vertical Wins
-                if r < ROW_COUNT - 3:
-                    if self._board[r][c] == self._board[r + 1][c] == \
-                            self._board[r + 2][c] == \
-                            self._board[r + 3][c] == piece:
-                        return True
+                if (
+                    r < ROW_COUNT - 3
+                    and self._board[r][c]
+                    == self._board[r + 1][c]
+                    == self._board[r + 2][c]
+                    == self._board[r + 3][c]
+                    == piece
+                ):
+                    return True
 
                 # Positive Diagonal Wins
-                if c < COL_COUNT - 3 and r < ROW_COUNT - 3:
-                    if self._board[r][c] == self._board[r + 1][c + 1] == \
-                            self._board[r + 2][c + 2] == \
-                            self._board[r + 3][c + 3] == piece:
-                        return True
+                if (
+                    c < COL_COUNT - 3
+                    and r < ROW_COUNT - 3
+                    and self._board[r][c]
+                    == self._board[r + 1][c + 1]
+                    == self._board[r + 2][c + 2]
+                    == self._board[r + 3][c + 3]
+                    == piece
+                ):
+                    return True
 
                 # Negative Diagonal Wins
-                if c < COL_COUNT - 3 and 3 <= r < ROW_COUNT:
-                    if self._board[r][c] == self._board[r - 1][c + 1] == \
-                            self._board[r - 2][c + 2] == \
-                            self._board[r - 3][c + 3] == piece:
-                        return True
+                if (
+                    c < COL_COUNT - 3
+                    and 3 <= r < ROW_COUNT
+                    and self._board[r][c]
+                    == self._board[r - 1][c + 1]
+                    == self._board[r - 2][c + 2]
+                    == self._board[r - 3][c + 3]
+                    == piece
+                ):
+                    return True
         return False
 
     def score_position(self, piece: str):
@@ -135,16 +151,15 @@ class Board:
         valid_locations = self.get_valid_locations()
         is_terminal = self.is_terminal_node()
         if depth == 0 or is_terminal:
-            if is_terminal:
-                if self.is_win(AI_PIECE):
-                    return None, 100000000000000
-                elif self.is_win(PLAYER_PIECE):
-                    return None, -10000000000000
-                else:  # Game is over, no more valid moves
-                    return None, 0
-            else:  # Depth is zero
+            if not is_terminal:  # Depth is zero
                 return None, self.score_position(AI_PIECE)
 
+            if self.is_win(AI_PIECE):
+                return None, 100000000000000
+            elif self.is_win(PLAYER_PIECE):
+                return None, -10000000000000
+            else:  # Game is over, no more valid moves
+                return None, 0
         if maximizing_player:  # Maximizing player (for bot turn)
             value = -math.inf
             column = random.choice(list(valid_locations.keys()))
@@ -160,8 +175,6 @@ class Board:
                 alpha = max(alpha, value)
                 if alpha >= beta:
                     break
-            return column, value
-
         else:  # Minimizing player (for player turn)
             value = math.inf
             column = random.choice(list(valid_locations.keys()))
@@ -177,7 +190,7 @@ class Board:
                 beta = min(beta, value)
                 if alpha >= beta:
                     break
-            return column, value
+        return column, value
 
 
 # Helper
