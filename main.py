@@ -613,18 +613,6 @@ async def on_message(message):
             await asyncio.sleep(2)
         await send(f"Hi {new_msg}, I'm dad!")
 
-    elif msg.startswith('+'):
-        async with message.channel.typing():
-            # do expensive stuff here
-            await asyncio.sleep(2)
-        embed = discord.Embed(description="We have migrated to slash commands. "
-                                          "Type /help to see what features are "
-                                          "available. If that doesn't work, you"
-                                          " may have to re-invite the bot "
-                                          "[here](https://discord.com/api/oauth2/authorize?client_id=834873988907139142&permissions=2148006976&scope=bot%20applications.commands).",
-                              color=discord.Colour.dark_purple())
-        await send(embed=embed)
-
     if any(word in split_msg for word in HAPPY):
         await message.add_reaction(EMOTES['catdance'])
 
